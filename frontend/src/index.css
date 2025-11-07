@@ -1,5 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
 @import "tailwindcss";
+
 
 .bg-gradient{
     background: radial-gradient(Circle at top left,#E5D5FF 15%,#FFC9D5 ,#FFDFC5,#ddfffcd8  )
 }
+
+
+.custom-bg-image {
+    background-image: url('./assets/gradient.png'); /* Adjust path as needed */
+    background-attachment: fixed;
+    background-size: cover; /* Ensures the image covers the entire background */
+    background-repeat: no-repeat; /* Prevents image repetition */
+    background-position: center; /* Centers the background image */
+    min-height: 100vh; /* Ensures the background covers the full viewport height */
+}
+
+
