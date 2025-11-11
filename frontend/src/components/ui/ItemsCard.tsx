@@ -1,23 +1,29 @@
 /* @format */
 
-import { useState } from "react";
+import { useCart } from "../../hooks/useCart"; // Import the hook
+import { MenuItem } from "../../types"; // Import the type
 
 interface CardProps {
-  title: string;
-  price: number;
-  image: string;
+  item: MenuItem; // The component now just takes the whole item
 }
 
-export function ItemCard({ title, image, price }: CardProps) {
-  const [quantity, setQuantity] = useState<number>(0);
+export function ItemCard({ item }: CardProps) {
+  const { getItemQuantity, addToCart, updateQuantity } = useCart();
+  
+  // Get the quantity for *this specific item* from the global context
+  const quantity = getItemQuantity(item.id);
 
   const increment = () => {
-    setQuantity((q) => q + 1);
+    if (quantity === 0) {
+      addToCart(item); // This adds it with quantity 1
+    } else {
+      updateQuantity(item.id, quantity + 1);
+    }
   };
 
   const decrement = () => {
-    // This logic correctly prevents going below 0
-    setQuantity((q) => (q > 0 ? q - 1 : 0));
+    // The updateQuantity function in the context will handle removal if q <= 0
+    updateQuantity(item.id, quantity - 1);
   };
 
   return (
@@ -25,13 +31,13 @@ export function ItemCard({ title, image, price }: CardProps) {
       
       <img
         className="h-24 w-24 rounded-lg object-cover shrink-0"
-        src={image}
-        alt={title}
+        src={item.image}
+        alt={item.title}
       />
 
       <div className="flex flex-col ml-4 gap-y-1">
-        <div className="font-semibold text-xl text-gray-800">{title}</div>
-        <div className="font-medium text-lg text-gray-600">₹{price}</div>
+        <div className="font-semibold text-xl text-gray-800">{item.title}</div>
+        <div className="font-medium text-lg text-gray-600">₹{item.price}</div>
       </div>
 
       

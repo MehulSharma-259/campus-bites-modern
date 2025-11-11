@@ -3,13 +3,70 @@
 import {NavLink} from "react-router";
 import {Profile} from "../components/icons/Profile";
 import {HeroCard} from "../components/ui/HeroCard";
+import {ItemCard} from "../components/ui/ItemsCard";
+import {useAuth} from "../hooks/useAuth"; // Import auth hook
+import {menuService} from "../api/menuService"; // Import menu service
+import {useEffect, useState} from "react";
+import {MenuItem} from "../types";
+
+// Import images (Vite handles this well)
 import beveragesImage from "../assets/foods/beverages.png";
 import chineseImage from "../assets/foods/chineseFood.png";
 import northIndianImage from "../assets/foods/north indian.png";
 import iceCreamImage from "../assets/foods/ice cream.png";
-import {ItemCard} from "../components/ui/ItemsCard";
+
+// Helper component to avoid repetition
+const MenuSection = ({title, items}: {title: string; items: MenuItem[]}) => {
+  if (items.length === 0) return null; // Don't render empty sections
+
+  return (
+    <div className="flex flex-col justify-center items-center gap-4">
+      <h1 className="text-4xl font-bold ">{title}</h1>
+      <div className="grid lg:grid-cols-2 gap-5 gap-x-15">
+        {items.map((item) => (
+          <ItemCard key={item.id} item={item} />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export function Home() {
+  const {user} = useAuth(); // Get user from global state
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch menu items on component mount
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        setLoading(true);
+        const items = await menuService.getMenuItems();
+        setMenuItems(items);
+        setError(null);
+      } catch (err: any) {
+        setError(err.message || "Failed to load menu.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMenu();
+  }, []);
+
+  // Filter items based on category
+  const northIndianItems = menuItems.filter(
+    (item) => item.category === "north-indian"
+  );
+  const chineseItems = menuItems.filter((item) => item.category === "chinese");
+  const iceCreamItems = menuItems.filter(
+    (item) => item.category === "ice-cream"
+  );
+  const beverageItems = menuItems.filter(
+    (item) => item.category === "beverages"
+  );
+  const otherItems = menuItems.filter((item) => item.category === "other");
+
   return (
     <>
       <div className="custom-bg-image ">
@@ -19,7 +76,7 @@ export function Home() {
             <div className="text-2xl font-bold">
               <NavLink to="/">CampusBites</NavLink>
             </div>
-
+            
             <div className="hidden md:flex gap-16 justify-between items-center">
               <NavLink
                 to="/"
@@ -50,19 +107,22 @@ export function Home() {
             <div>
               <NavLink
                 className={"flex gap-2 justify-center items-center"}
-                to="/"
+                to={user ? "/profile" : "/signin"} // Change link based on auth
               >
                 <Profile />
-                <span className="font-medium text-gray-900">You</span>
+                {/* Show user's name or "Sign In" */}
+                <span className="font-medium text-gray-900">
+                  {user ? user.name?.split(" ")[0] : "Sign In"}
+                </span>
               </NavLink>
             </div>
           </div>
         </nav>
 
-        {/* Hero section */}
+        {/* Hero section (remains the same) */}
         <div className="flex flex-1 items-center justify-center px-20 py-10 mb-50">
+          {/* ... hero text ... */}
           <div className="flex flex-1 flex-col justify-center items-start pl-10">
-            {/* Hero text */}
             <h1 className="text-6xl font-bold mb-6 leading-tight ">
               Enjoy our <br /> Delicious Meal
             </h1>
@@ -70,7 +130,6 @@ export function Home() {
               “The wait for your food cravings <br /> comes to an end.”
             </p>
           </div>
-
           <div className="flex flex-1 justify-center">
             <div className="grid grid-cols-2 gap-6 ">
               <HeroCard title={"North Indian"} image={northIndianImage} />
@@ -83,249 +142,18 @@ export function Home() {
 
         {/* Menu section */}
         <div className="flex flex-col gap-10">
-          {/* north indian */}
-          <div className="flex flex-col justify-center items-center gap-4">
-            <h1 className="text-4xl font-bold ">North Indian</h1>
+          {loading && <p className="text-center text-xl">Loading menu...</p>}
+          {error && <p className="text-center text-xl text-red-500">{error}</p>}
 
-            <div className="grid lg:grid-cols-2 gap-5 gap-x-15">
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* chinese */}
-          <div className="flex flex-col justify-center items-center gap-4">
-            <h1 className="text-4xl font-bold ">Chinese</h1>
-
-            <div className="grid lg:grid-cols-2 gap-5 gap-x-15">
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* ice cream */}
-          <div className="flex flex-col justify-center items-center gap-4">
-            <h1 className="text-4xl font-bold ">Ice Cream</h1>
-
-            <div className="grid lg:grid-cols-2 gap-5 gap-x-15">
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* beverages */}
-          <div className="flex flex-col justify-center items-center gap-4">
-            <h1 className="text-4xl font-bold ">Beverages</h1>
-
-            <div className="grid lg:grid-cols-2 gap-5 gap-x-15">
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* others */}
-          <div className="flex flex-col justify-center items-center gap-4">
-            <h1 className="text-4xl font-bold ">Others</h1>
-
-            <div className="grid lg:grid-cols-2 gap-5 gap-x-15">
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-              <div>
-                <ItemCard
-                  title="Chola Bhatoora"
-                  price={35}
-                  image={northIndianImage}
-                />
-              </div>
-            </div>
-          </div>
+          {/* Render sections dynamically */}
+          <MenuSection title="North Indian" items={northIndianItems} />
+          <MenuSection title="Chinese" items={chineseItems} />
+          <MenuSection title="Ice Cream" items={iceCreamItems} />
+          <MenuSection title="Beverages" items={beverageItems} />
+          <MenuSection title="Others" items={otherItems} />
         </div>
 
-        <div className="h-[150px] w-full">
-
-        </div>
-
-
+        <div className="h-[150px] w-full">{/* Footer space */}</div>
       </div>
     </>
   );
