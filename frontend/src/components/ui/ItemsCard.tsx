@@ -8,20 +8,22 @@ interface CardProps {
 }
 
 export function ItemCard({ item }: CardProps) {
-  const { getItemQuantity, addToCart, updateQuantity } = useCart();
+  const { getItemQuantity, addToCart, updateQuantity, setPopUp } = useCart();
   
   // Get the quantity for *this specific item* from the global context
   const quantity = getItemQuantity(item.id);
 
   const increment = () => {
+    setPopUp(true);
     if (quantity === 0) {
       addToCart(item); // This adds it with quantity 1
     } else {
       updateQuantity(item.id, quantity + 1);
     }
   };
-
+  
   const decrement = () => {
+    setPopUp(true);
     // The updateQuantity function in the context will handle removal if q <= 0
     updateQuantity(item.id, quantity - 1);
   };

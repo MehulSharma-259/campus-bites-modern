@@ -35,21 +35,21 @@ const Cart = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <button 
-                    className="bg-[#ff4757] text-white px-3 py-1 rounded-lg"
+                    className="bg-[#ff4757] text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors cursor-pointer"
                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
                   >
                     -
                   </button>
                   <span className="px-2">{item.quantity}</span>
                   <button 
-                    className="bg-[#ff4757] text-white px-3 py-1 rounded-lg"
+                    className="bg-[#ff4757] hover:bg-red-600 transition-colors cursor-pointer text-white px-3 py-1 rounded-lg"
                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
                   >
                     +
                   </button>
                   {/* Optional: Add a remove button */}
                    <button 
-                    className="bg-gray-500 text-white px-2 py-1 rounded-lg text-xs"
+                    className="bg-gray-500 hover:bg-gray-900 text-white px-2 py-1 rounded-lg text-xs cursor-pointer"
                     onClick={() => removeFromCart(item.id)}
                   >
                     Remove

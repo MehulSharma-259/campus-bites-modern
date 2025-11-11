@@ -14,6 +14,8 @@ import beveragesImage from "../assets/foods/beverages.png";
 import chineseImage from "../assets/foods/chineseFood.png";
 import northIndianImage from "../assets/foods/north indian.png";
 import iceCreamImage from "../assets/foods/ice cream.png";
+import { CartIcon } from "../components/icons/Cart";
+import { PopUp } from "../components/ui/PopUp";
 
 // Helper component to avoid repetition
 const MenuSection = ({title, items}: {title: string; items: MenuItem[]}) => {
@@ -104,7 +106,12 @@ export function Home() {
               </NavLink>
             </div>
 
-            <div>
+            <div className="flex items-center justify-center gap-5">
+
+              <NavLink to="/cart">
+                <CartIcon/>
+              </NavLink>
+
               <NavLink
                 className={"flex gap-2 justify-center items-center"}
                 to={user ? "/profile" : "/signin"} // Change link based on auth
@@ -118,6 +125,8 @@ export function Home() {
             </div>
           </div>
         </nav>
+
+        <PopUp/>
 
         {/* Hero section (remains the same) */}
         <div className="flex flex-1 items-center justify-center px-20 py-10 mb-50">

@@ -9,6 +9,8 @@ import {CartItem, MenuItem} from "../types";
 
 // Define the shape of the context data
 interface CartContextType {
+  popUp: boolean,
+  setPopUp: (popUp: boolean) => void,
   cartItems: CartItem[];
   addToCart: (item: MenuItem) => void;
   removeFromCart: (itemId: string) => void;
@@ -25,6 +27,7 @@ export const CartContext = createContext<CartContextType | undefined>(
 
 // Create the provider component
 export function CartProvider({children}: {children: ReactNode}) {
+  const [popUp, setPopUp] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const addToCart = (itemToAdd: MenuItem) => {
@@ -82,6 +85,8 @@ export function CartProvider({children}: {children: ReactNode}) {
     getItemQuantity,
     totalPrice,
     totalItems,
+    popUp,
+    setPopUp
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
