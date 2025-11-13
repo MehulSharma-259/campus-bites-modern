@@ -27,7 +27,7 @@ export interface MenuItem {
   title: string;
   price: number;
   image: string;
-  category: 'north-indian' | 'chinese' | 'ice-cream' | 'beverages' | 'other';
+  category: 'north_indian' | 'chinese' | 'ice_cream' | 'beverages' | 'other';
 }
 
 // Represents an item that has been added to the cart

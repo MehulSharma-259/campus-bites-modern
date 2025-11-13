@@ -58,11 +58,11 @@ export function Home() {
 
   // Filter items based on category
   const northIndianItems = menuItems.filter(
-    (item) => item.category === "north-indian"
+    (item) => item.category === "north_indian"
   );
   const chineseItems = menuItems.filter((item) => item.category === "chinese");
   const iceCreamItems = menuItems.filter(
-    (item) => item.category === "ice-cream"
+    (item) => item.category === "ice_cream"
   );
   const beverageItems = menuItems.filter(
     (item) => item.category === "beverages"

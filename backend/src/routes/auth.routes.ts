@@ -70,6 +70,7 @@ router.post("/signup", async (req: Request, res: Response) => {
 
     const token = signTokenUser({userId: user.id})
     res.status(201).json({
+      user: user,
       token: token,
       message: "signed up successfully"
     })

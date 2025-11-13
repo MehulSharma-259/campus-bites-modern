@@ -27,7 +27,7 @@ export function signTokenAdmin(payload: IPayload) {
 }
 
 export function verifyTokenUser(token: string) {
-  const data = jwt.sign(token, jwt_secret_user)
+  const data = jwt.verify(token, jwt_secret_user)
   return data;
 }
 

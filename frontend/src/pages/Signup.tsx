@@ -6,6 +6,8 @@ import {useAuth} from "../hooks/useAuth"; // Import the hook
 
 export function Signup() {
   const [universityId, setUniversityId] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -22,7 +24,7 @@ export function Signup() {
 
     try {
       // Call the segregated API logic
-      const {token, user} = await authService.signIn({universityId, password});
+      const {token, user} = await authService.signUp({name, email, universityId, password});
 
       // Use the context function to set global state and save to localStorage
       login(user, token);
@@ -48,6 +50,7 @@ export function Signup() {
                 Name
               </label>
               <input
+                onChange={(e) => setName(e.target.value)}
                 id="name"
                 placeholder="Enter Your Name"
                 className="bg-[#575757b7] p-2 text-white rounded-sm"
@@ -59,6 +62,7 @@ export function Signup() {
                 Email
               </label>
               <input
+                onChange={(e) => setEmail(e.target.value)}
                 id="email"
                 placeholder="Enter Your Email"
                 className="bg-[#575757b7] p-2 text-white rounded-sm"
