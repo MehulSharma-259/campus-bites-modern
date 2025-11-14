@@ -66,7 +66,7 @@ const Cart = () => {
             <h3 className="text-xl font-semibold">Total: ₹{totalPrice}</h3>
             <button
               onClick={() => navigate("/payment")}
-              className="bg-[#ff4757] hover:bg-[#ff5c67] text-white px-6 py-2 rounded-xl shadow-md transition"
+              className="bg-[#ff4757] hover:bg-red-700 cursor-pointer text-white px-6 py-2 rounded-xl shadow-md transition"
             >
               Proceed to Pay
             </button>

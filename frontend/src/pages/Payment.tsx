@@ -46,7 +46,7 @@ const Payment = () => {
 
           <button
             type="submit"
-            className="w-full bg-[#ff4757] hover:bg-[#ff5c67] text-white py-2 rounded-lg shadow-md transition"
+            className="w-full bg-[#ff4757] hover:bg-red-700 cursor-pointer text-white py-2 rounded-lg shadow-md transition"
           >
             Pay ₹120
           </button>

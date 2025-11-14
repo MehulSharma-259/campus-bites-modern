@@ -1,21 +1,30 @@
 /** @format */
 
-import {NavLink} from "react-router";
+import {NavLink} from "react-router"; // Corrected import
 import {Profile} from "../components/icons/Profile";
 import {HeroCard} from "../components/ui/HeroCard";
 import {ItemCard} from "../components/ui/ItemsCard";
-import {useAuth} from "../hooks/useAuth"; // Import auth hook
-import {menuService} from "../api/menuService"; // Import menu service
+import {useAuth} from "../hooks/useAuth";
+import {menuService} from "../api/menuService";
 import {useEffect, useState} from "react";
 import {MenuItem} from "../types";
-
-// Import images (Vite handles this well)
-import beveragesImage from "../assets/foods/beverages.png";
-import chineseImage from "../assets/foods/chineseFood.png";
-import northIndianImage from "../assets/foods/north indian.png";
-import iceCreamImage from "../assets/foods/ice cream.png";
 import {CartIcon} from "../components/icons/Cart";
 import {PopUp} from "../components/ui/PopUp";
+
+// Import images (Vite handles this well)
+// import beveragesImage from "../assets/foods/beverages.png";
+// import chineseImage from "../assets/foods/chineseFood.png";
+// import northIndianImage from "../assets/foods/north indian.png";
+// import iceCreamImage from "../assets/foods/ice cream.png";
+// import {CartIcon} from "../components/icons/Cart";
+// import {PopUp} from "../components/ui/PopUp";
+
+const heroCardData = [
+  {title: "North Indian", image: "/images/foods/north indian.png"},
+  {title: "Chinese", image: "/images/foods/chineseFood.png"},
+  {title: "Ice Cream", image: "/images/foods/ice cream.png"},
+  {title: "Beverages", image: "/images/foods/beverages.png"},
+];
 
 // Helper component to avoid repetition
 const MenuSection = ({title, items}: {title: string; items: MenuItem[]}) => {
@@ -61,9 +70,7 @@ export function Home() {
     (item) => item.category === "north_indian"
   );
 
-  const chineseItems = menuItems.filter(
-    (item) => item.category === "chinese"
-  );
+  const chineseItems = menuItems.filter((item) => item.category === "chinese");
 
   const iceCreamItems = menuItems.filter(
     (item) => item.category === "ice_cream"
@@ -72,9 +79,7 @@ export function Home() {
     (item) => item.category === "beverages"
   );
 
-  const otherItems = menuItems.filter(
-    (item) => item.category === "other"
-  );
+  const otherItems = menuItems.filter((item) => item.category === "other");
 
   return (
     <>
@@ -148,10 +153,13 @@ export function Home() {
           </div>
           <div className="flex flex-1 justify-center">
             <div className="grid grid-cols-2 gap-6 ">
-              <HeroCard title={"North Indian"} image={northIndianImage} />
-              <HeroCard title={"Chinese"} image={chineseImage} />
-              <HeroCard title={"Ice Cream"} image={iceCreamImage} />
-              <HeroCard title={"Beverages"} image={beveragesImage} />
+              {heroCardData.map((card) => (
+                <HeroCard
+                  key={card.title}
+                  title={card.title}
+                  image={card.image}
+                />
+              ))}
             </div>
           </div>
         </div>
