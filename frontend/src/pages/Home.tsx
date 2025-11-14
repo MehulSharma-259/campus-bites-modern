@@ -14,8 +14,8 @@ import beveragesImage from "../assets/foods/beverages.png";
 import chineseImage from "../assets/foods/chineseFood.png";
 import northIndianImage from "../assets/foods/north indian.png";
 import iceCreamImage from "../assets/foods/ice cream.png";
-import { CartIcon } from "../components/icons/Cart";
-import { PopUp } from "../components/ui/PopUp";
+import {CartIcon} from "../components/icons/Cart";
+import {PopUp} from "../components/ui/PopUp";
 
 // Helper component to avoid repetition
 const MenuSection = ({title, items}: {title: string; items: MenuItem[]}) => {
@@ -60,14 +60,21 @@ export function Home() {
   const northIndianItems = menuItems.filter(
     (item) => item.category === "north_indian"
   );
-  const chineseItems = menuItems.filter((item) => item.category === "chinese");
+
+  const chineseItems = menuItems.filter(
+    (item) => item.category === "chinese"
+  );
+
   const iceCreamItems = menuItems.filter(
     (item) => item.category === "ice_cream"
   );
   const beverageItems = menuItems.filter(
     (item) => item.category === "beverages"
   );
-  const otherItems = menuItems.filter((item) => item.category === "other");
+
+  const otherItems = menuItems.filter(
+    (item) => item.category === "other"
+  );
 
   return (
     <>
@@ -78,7 +85,7 @@ export function Home() {
             <div className="text-2xl font-bold">
               <NavLink to="/">CampusBites</NavLink>
             </div>
-            
+
             <div className="hidden md:flex gap-16 justify-between items-center">
               <NavLink
                 to="/"
@@ -107,14 +114,14 @@ export function Home() {
             </div>
 
             <div className="flex items-center justify-center gap-5">
-
               <NavLink to="/cart">
-                <CartIcon/>
+                <CartIcon />
               </NavLink>
 
               <NavLink
                 className={"flex gap-2 justify-center items-center"}
                 to={user ? "/profile" : "/signin"} // Change link based on auth
+                replace
               >
                 <Profile />
                 {/* Show user's name or "Sign In" */}
@@ -126,7 +133,7 @@ export function Home() {
           </div>
         </nav>
 
-        <PopUp/>
+        <PopUp />
 
         {/* Hero section (remains the same) */}
         <div className="flex flex-1 items-center justify-center px-20 py-10 mb-50">

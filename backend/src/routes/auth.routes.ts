@@ -75,7 +75,7 @@ router.post("/signup", async (req: Request, res: Response) => {
       message: "signed up successfully"
     })
   } catch(error: any) {
-    res.status(400).json({
+    res.status(501).json({
       message: error.message
     })
   }
@@ -91,14 +91,14 @@ router.post("/signin", async (req: Request, res: Response) => {
     })
 
     if(!user) {
-      return res.json({
-        message: "invalid credentials"
+      return res.status(401).json({
+        message: "user not exists please signup"
       })
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if(!isPasswordValid) {
-      return res.json({
+      return res.status(401).json({
         message: "invalid credentials"
       })
     }
@@ -116,7 +116,7 @@ router.post("/signin", async (req: Request, res: Response) => {
       user: userToReturn
     })
   } catch(error: any) {
-    return res.json({
+    return res.status(501).json({
       message: error.message
     })
   }
