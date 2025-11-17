@@ -1,30 +1,40 @@
-/**
- * Manages the global state for user authentication.
- */
-import { createContext, ReactNode, useState, useEffect } from "react";
-import { User } from "../types";
+/** @format */
+
+import {createContext, ReactNode, useState, useEffect} from "react";
+import {User} from "../types";
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (user: User, token: string) => void;
   logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({children}: {children: ReactNode}) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // On initial load, check localStorage for existing session
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+    try {
+      const storedToken = localStorage.getItem("token");
+      const storedUser = localStorage.getItem("user");
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error("Failed to parse auth data from localStorage", error);
+      logout();
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -46,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     token,
     isAuthenticated: !!token,
+    isLoading,
     login,
     logout,
   };

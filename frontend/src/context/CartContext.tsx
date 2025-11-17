@@ -4,20 +4,25 @@
  * @format
  */
 
-import {createContext, ReactNode, useState} from "react";
+import {createContext, ReactNode, useCallback, useEffect, useState} from "react";
 import {CartItem, MenuItem} from "../types";
+import { useAuth } from "../hooks/useAuth";
+import { cartService, flattenBackendCartItem } from "../api/cartService";
 
 // Define the shape of the context data
 interface CartContextType {
   popUp: boolean,
   setPopUp: (popUp: boolean) => void,
   cartItems: CartItem[];
-  addToCart: (item: MenuItem) => void;
-  removeFromCart: (itemId: string) => void;
-  updateQuantity: (itemId: string, newQuantity: number) => void;
+  addToCart: (item: MenuItem) => Promise<void>;
+  removeFromCart: (itemId: string) => Promise<void>;
+  updateQuantity: (itemId: string, newQuantity: number) => Promise<void>;
   getItemQuantity: (itemId: string) => number;
   totalPrice: number;
   totalItems: number;
+  loading: boolean;
+  error: string | null;
+  clearCart: () => void
 }
 
 // Create the context
@@ -29,39 +34,71 @@ export const CartContext = createContext<CartContextType | undefined>(
 export function CartProvider({children}: {children: ReactNode}) {
   const [popUp, setPopUp] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const addToCart = (itemToAdd: MenuItem) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === itemToAdd.id);
-      if (existingItem) {
-        // If item exists, update its quantity
-        return prevItems.map((item) =>
-          item.id === itemToAdd.id
-            ? {...item, quantity: item.quantity + 1}
-            : item
-        );
-      }
-      // If new item, add it to the cart with quantity 1
-      return [...prevItems, {...itemToAdd, quantity: 1}];
-    });
-  };
+  const { token } = useAuth();
 
-  const removeFromCart = (itemId: string) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
-  };
+  const fetchCart = useCallback(async () => {
+    if(!token)
+      return;
 
-  const updateQuantity = (itemId: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      // If quantity drops to 0 or less, remove the item
-      removeFromCart(itemId);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const backendCart = await cartService.getCart(token);
+      const flattenedItems = flattenBackendCartItem(backendCart);
+      setCartItems(flattenedItems);
+
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [token])
+
+  useEffect(()=> {
+    if(token) {
+      fetchCart();
     } else {
-      setCartItems((prevItems) =>
-        prevItems.map((item) =>
-          item.id === itemId ? {...item, quantity: newQuantity} : item
-        )
-      );
+      setCartItems([]);
+    }
+  }, [token, fetchCart])
+  
+  const updateQuantity = async (itemId: string, newQuantity: number) => {
+    if(!token) {
+      setError("Please login to update your cart")
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const updatedBackendCart = await cartService.updateCartItem(token, itemId, newQuantity);
+      const flattenedItems = flattenBackendCartItem(updatedBackendCart);
+      setCartItems(flattenedItems);
+    } catch (error: any) {
+      setError(error.message)
+    } finally {
+      setLoading(false);
     }
   };
+
+  const addToCart = async (itemToAdd: MenuItem) => {
+    const currentQuantity = getItemQuantity(itemToAdd.id);
+    await updateQuantity(itemToAdd.id, currentQuantity + 1);
+  };
+
+  const removeFromCart = async (itemId: string) => {
+    await updateQuantity(itemId, 0)
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
+  }
+
 
   const getItemQuantity = (itemId: string): number => {
     return cartItems.find((item) => item.id === itemId)?.quantity || 0;
@@ -86,7 +123,10 @@ export function CartProvider({children}: {children: ReactNode}) {
     totalPrice,
     totalItems,
     popUp,
-    setPopUp
+    setPopUp,
+    clearCart,
+    loading,
+    error
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

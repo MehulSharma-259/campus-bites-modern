@@ -39,7 +39,7 @@ router.get("/", async (req: AuthRequest, res) => {
   }
 });
 
-router.put("item", async (req: AuthRequest, res) => {
+router.put("/item", async (req: AuthRequest, res) => {
   try {
     const userId = req.user!.id;
     const {menuItemId, quantity} = req.body;
