@@ -58,7 +58,7 @@ router.put("/item", async (req: AuthRequest, res) => {
       await prisma.cartItem.deleteMany({
         where: {
           cartId: userCart.id,
-          menuItem: menuItemId
+          menuItemId: menuItemId
         }
       })
     } else {
