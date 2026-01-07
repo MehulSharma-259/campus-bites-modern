@@ -1,3 +1,5 @@
+/** @format */
+
 import { useEffect, useState } from "react";
 import { orderService } from "../api/orderService";
 import { useAuth } from "../hooks/useAuth";
@@ -22,7 +24,6 @@ export function Orders() {
         setLoading(false);
       }
     };
-
     fetchOrders();
   }, [token]);
 
@@ -33,15 +34,11 @@ export function Orders() {
     <div className="min-h-screen custom-bg-image p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         
-        {/* === Header Section === */}
-        <header className="flex justify-between items-center mb-8 bg-white/20 backdrop-blur-md p-4 rounded-xl shadow-lg">
+        {/* Simplified Header: Removed Back to Profile button */}
+        <header className="flex justify-center items-center mb-8 bg-white/20 backdrop-blur-md p-6 rounded-xl shadow-lg">
           <h1 className="text-4xl font-bold text-gray-800">My Orders</h1>
-          <Link to="/profile" className="text-[#FF4461] hover:text-red-700 font-medium transition-colors">
-            Back to Profile
-          </Link>
         </header>
 
-        {/* --- Content --- */}
         {orders.length === 0 ? (
           <div className="bg-white/70 backdrop-blur-md p-8 rounded-lg text-center shadow-lg text-gray-800">
             <p className="text-xl">No orders found.</p>
@@ -53,8 +50,6 @@ export function Orders() {
           <div className="space-y-6">
             {orders.map((order) => (
               <div key={order.id} className="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-gray-200 text-gray-800">
-                
-                {/* Order Summary: ID, Date, Status, Total Price */}
                 <div className="flex justify-between items-start pb-4 border-b border-gray-300 mb-4">
                   <div>
                     <p className="text-sm font-medium text-gray-500">
@@ -76,7 +71,6 @@ export function Orders() {
                   </div>
                 </div>
 
-                {/* Individual Items List */}
                 <h3 className="font-semibold text-lg mb-2">Items Ordered:</h3>
                 <div className="space-y-2">
                   {order.items.map((item) => (

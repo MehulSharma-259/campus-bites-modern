@@ -43,6 +43,13 @@ export async function authMiddleware(req: AuthRequest , res: Response, next: Nex
     req.user = user;
     next()
   } catch(err: any){
+
+    if(err && err.name == "TokenExpiredError") {
+      res.status(401).json({
+        message: "unauthorized: token expired"
+      })
+    }
+
     res.status(403).json({
       message: "invalid token"
     })

@@ -1,19 +1,22 @@
 /** @format */
 
-import {BrowserRouter, Route, Routes} from "react-router";
+import { BrowserRouter, Route, Routes } from "react-router";
 import "./App.css";
-import {Signin} from "./pages/Signin";
-import {Signup} from "./pages/Signup";
-import {Home} from "./pages/Home";
+import { Signin } from "./pages/Signin";
+import { Signup } from "./pages/Signup";
+import { Home } from "./pages/Home";
 import Cart from "./pages/Cart";
 import Payment from "./pages/Payment";
-import {Profile} from "./pages/Profile";
-import {ProtectedRoute} from "./components/ProtectedRoute";
+import { Profile } from "./pages/Profile";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Orders } from "./pages/Orders";
+import { Navbar } from "./components/Navbar"; // Import the new Navbar
 
 function App() {
   return (
     <BrowserRouter>
+      {/* Navbar added here so it shows on every page */}
+      <Navbar /> 
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Home />} />

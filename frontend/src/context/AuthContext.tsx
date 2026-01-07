@@ -2,6 +2,7 @@
 
 import {createContext, ReactNode, useState, useEffect} from "react";
 import {User} from "../types";
+import axios from "axios"; // Ensure axios is imported
 
 interface AuthContextType {
   user: User | null;
@@ -21,7 +22,20 @@ export function AuthProvider({children}: {children: ReactNode}) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // On initial load, check localStorage for existing session
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+  };
+
+  const login = (user: User, token: string) => {
+    setUser(user);
+    setToken(token);
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+  };
+
   useEffect(() => {
     try {
       const storedToken = localStorage.getItem("token");
@@ -36,21 +50,20 @@ export function AuthProvider({children}: {children: ReactNode}) {
     } finally {
       setIsLoading(false);
     }
+
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        // If backend returns 401, trigger logout
+        if (error.response?.status === 401) {
+          logout();
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => axios.interceptors.response.eject(interceptor);
   }, []);
-
-  const login = (user: User, token: string) => {
-    setUser(user);
-    setToken(token);
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-  };
-
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-  };
 
   const value = {
     user,

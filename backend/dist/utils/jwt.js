@@ -6,7 +6,7 @@ if (!jwt_secret_user || !jwt_secret_admin) {
 }
 export function signTokenUser(payload) {
     const token = jwt.sign(payload, jwt_secret_user, {
-        expiresIn: "7d"
+        expiresIn: "1m"
     });
     return token;
 }
