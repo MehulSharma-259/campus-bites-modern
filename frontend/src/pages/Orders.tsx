@@ -5,6 +5,7 @@ import { orderService } from "../api/orderService";
 import { useAuth } from "../hooks/useAuth";
 import { Order } from "../types";
 import { Link } from "react-router";
+import { API_BASE_URL } from "../constants"; // Added to handle the cancel fetch
 
 export function Orders() {
   const { token } = useAuth();
@@ -17,7 +18,7 @@ export function Orders() {
     if (!token) return;
     try {
       const data = await orderService.getOrders(token);
-      // Sort orders by newest first for better presentation UX
+      // Sort orders by newest first
       const sortedOrders = data.sort((a: Order, b: Order) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
@@ -39,6 +40,33 @@ export function Orders() {
     fetchOrders();
   };
 
+  // NEW: Handle Order Cancellation
+  const handleCancelOrder = async (orderId: string) => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/order/${encodeURIComponent(orderId)}/cancel`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        // Instantly update the UI to show it as CANCELLED
+        setOrders(orders.map(order => 
+          order.id === orderId ? { ...order, status: 'CANCELLED' } : order
+        ));
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || "Failed to cancel order");
+      }
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+    }
+  };
+
   if (loading) return <div className="h-screen flex justify-center items-center text-gray-800 font-bold">Loading Orders...</div>;
   if (error) return <div className="h-screen flex justify-center items-center text-red-500 font-bold">{error}</div>;
 
@@ -46,7 +74,6 @@ export function Orders() {
     <div className="min-h-screen p-4 md:p-8 pt-10">
       <div className="max-w-4xl mx-auto mt-10">
         
-        {/* Header with Refresh Button for Presentation */}
         <header className="flex justify-between items-center mb-10 bg-white/20 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/30">
           <h1 className="text-4xl font-black text-gray-800 tracking-tight">My Orders</h1>
           <button 
@@ -82,12 +109,13 @@ export function Orders() {
                   </div>
                   
                   <div className="text-right flex flex-col items-end">
-                    {/* Enhanced Status Display */}
                     <span className={`px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm border ${
                       order.status === 'COMPLETED' ? 'bg-green-100 text-green-700 border-green-200' : 
-                      order.status === 'PENDING' ? 'bg-orange-100 text-orange-700 border-orange-200 animate-pulse' : 'bg-red-100 text-red-700 border-red-200'
+                      order.status === 'PENDING' ? 'bg-orange-100 text-orange-700 border-orange-200 animate-pulse' : 
+                      'bg-red-100 text-red-700 border-red-200'
                     }`}>
-                      {order.status === 'PENDING' ? '⏳ Pending Staff' : `✅ ${order.status}`}
+                      {order.status === 'PENDING' ? '⏳ Pending Staff' : 
+                       order.status === 'CANCELLED' ? '❌ Cancelled' : `✅ ${order.status}`}
                     </span>
                     
                     {order.status === 'PENDING' && (
@@ -97,6 +125,16 @@ export function Orders() {
                     )}
 
                     <p className="font-black text-3xl text-[#FF4461] mt-2">₹{order.totalPrice}</p>
+
+                    {/* NEW: Cancel Button */}
+                    {order.status === 'PENDING' && (
+                      <button 
+                        onClick={() => handleCancelOrder(order.id)}
+                        className="mt-3 text-xs font-bold text-red-500 hover:text-red-700 underline transition-colors"
+                      >
+                        Cancel Order
+                      </button>
+                    )}
                   </div>
                 </div>
 

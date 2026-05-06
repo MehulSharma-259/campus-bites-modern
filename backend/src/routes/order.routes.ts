@@ -112,4 +112,51 @@ router.post('/place-order', async (req: AuthRequest, res) => {
 
 })
 
+// ==========================================
+// 3. PATCH: Cancel a pending order (Student Side)
+// ==========================================
+router.patch('/:id/cancel', async (req: AuthRequest, res) => {
+  try {
+    // 1. Explicitly cast to string to satisfy TypeScript strict mode
+    const orderId = req.params.id as string;
+    const userId = req.user!.id;
+
+    // 2. Safety check
+    if (!orderId) {
+      return res.status(400).json({ message: "Order ID is required" });
+    }
+
+    // First, verify the order belongs to this user and is still PENDING
+    const order = await prisma.order.findFirst({
+      where: { 
+        id: orderId,
+        userId: userId 
+      }
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.status !== 'PENDING') {
+      return res.status(400).json({ message: "Only pending orders can be cancelled" });
+    }
+
+    // Update the status to CANCELLED
+    const cancelledOrder = await prisma.order.update({
+      where: { id: orderId },
+      data: { status: 'CANCELLED' }
+    });
+
+    return res.json({
+      message: "Order cancelled successfully",
+      order: cancelledOrder
+    });
+
+  } catch (error: any) {
+    console.error("Error cancelling order:", error);
+    return res.status(500).json({ message: "Failed to cancel order" });
+  }
+});
+
 export default router;

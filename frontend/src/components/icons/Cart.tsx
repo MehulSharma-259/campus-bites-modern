@@ -13,14 +13,14 @@ export function CartIcon() {
       viewBox="0 0 902.86 902.86"
       xmlSpace="preserve"
       stroke="#000000"
-      stroke-width="0.009028600000000001"
+      strokeWidth="0.009028600000000001"
       className="text-gray-700 hover:text-gray-900 transition-colors"
     >
-      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
       <g
         id="SVGRepo_tracerCarrier"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       ></g>
       <g id="SVGRepo_iconCarrier">
         {" "}
