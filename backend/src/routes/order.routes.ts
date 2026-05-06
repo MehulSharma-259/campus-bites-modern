@@ -34,6 +34,16 @@ router.post('/place-order', async (req: AuthRequest, res) => {
   try {
     const userId = req.user!.id;
 
+    // 1. Fetch the user to get their universityId
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { universityId: true }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const cart = await prisma.cart.findUnique({
       where: {userId},
       include: {
@@ -47,20 +57,31 @@ router.post('/place-order', async (req: AuthRequest, res) => {
       return res.status(400).json({message: "cart is empty"})
     }
 
-    const totalPrice = cart.items.reduce((accumulator, items) => {
+    const totalPrice = cart.items.reduce((accumulator :any, items: any) => {
       return accumulator + (items.menuItem.price * items.quantity)
     }, 0)
 
+    // 2. Generate Custom Order ID format: "university id 6 May 2026 - 18:42"
+    const now = new Date();
+    const day = now.getDate();
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const month = monthNames[now.getMonth()];
+    const year = now.getFullYear();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    
+    const customOrderId = `${user.universityId} ${day} ${month} ${year} - ${hours}:${minutes}`;
 
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await prisma.$transaction(async (tx: any) => {
 
       const newOrder = await tx.order.create({
         data: {
+          id: customOrderId, // Override default ID with our custom one
           userId,
           totalPrice, 
-          status: 'COMPLETED',
+          status: 'PENDING', // Updated to PENDING as requested
           items: {
-            create: cart.items.map((items) => ({
+            create: cart.items.map((items: any) => ({
               title: items.menuItem.title,
               price: items.menuItem.price,
               quantity: items.quantity,

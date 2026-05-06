@@ -18,7 +18,7 @@ const config = {
             "value": "prisma-client"
         },
         "output": {
-            "value": "C:\\Users\\MEHUL\\OneDrive\\Desktop\\github\\campus-bites-modern\\backend\\src\\generated\\prisma",
+            "value": "C:\\Users\\MEHUL\\Desktop\\VS code\\Web development\\cohort\\campus-bites-modern\\backend\\src\\generated\\prisma",
             "fromEnvVar": null
         },
         "config": {
@@ -32,7 +32,7 @@ const config = {
             }
         ],
         "previewFeatures": [],
-        "sourceFilePath": "C:\\Users\\MEHUL\\OneDrive\\Desktop\\github\\campus-bites-modern\\backend\\prisma\\schema.prisma",
+        "sourceFilePath": "C:\\Users\\MEHUL\\Desktop\\VS code\\Web development\\cohort\\campus-bites-modern\\backend\\prisma\\schema.prisma",
         "isCustomOutput": true
     },
     "relativePath": "../../../prisma",
@@ -42,6 +42,7 @@ const config = {
         "db"
     ],
     "activeProvider": "postgresql",
+    "postinstall": false,
     "inlineDatasources": {
         "db": {
             "url": {

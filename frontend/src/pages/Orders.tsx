@@ -1,6 +1,6 @@
 /** @format */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { orderService } from "../api/orderService";
 import { useAuth } from "../hooks/useAuth";
 import { Order } from "../types";
@@ -11,33 +11,51 @@ export function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      if (!token) return;
-      try {
-        const data = await orderService.getOrders(token);
-        setOrders(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
+  const fetchOrders = useCallback(async () => {
+    if (!token) return;
+    try {
+      const data = await orderService.getOrders(token);
+      // Sort orders by newest first for better presentation UX
+      const sortedOrders = data.sort((a: Order, b: Order) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setOrders(sortedOrders);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
   }, [token]);
 
-  if (loading) return <div className="h-screen flex justify-center items-center text-gray-800 font-bold">Loading...</div>;
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    fetchOrders();
+  };
+
+  if (loading) return <div className="h-screen flex justify-center items-center text-gray-800 font-bold">Loading Orders...</div>;
   if (error) return <div className="h-screen flex justify-center items-center text-red-500 font-bold">{error}</div>;
 
   return (
     <div className="min-h-screen p-4 md:p-8 pt-10">
       <div className="max-w-4xl mx-auto mt-10">
         
-        {/* Simplified Header */}
-        <header className="flex justify-center items-center mb-10 bg-white/20 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/30">
+        {/* Header with Refresh Button for Presentation */}
+        <header className="flex justify-between items-center mb-10 bg-white/20 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/30">
           <h1 className="text-4xl font-black text-gray-800 tracking-tight">My Orders</h1>
+          <button 
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className={`px-4 py-2 bg-white text-gray-800 font-bold rounded-lg shadow-sm border border-gray-200 transition-all hover:bg-gray-50 ${isRefreshing ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}`}
+          >
+            {isRefreshing ? 'Refreshing...' : '🔄 Refresh Status'}
+          </button>
         </header>
 
         {orders.length === 0 ? (
@@ -57,19 +75,27 @@ export function Orders() {
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                       Order ID
                     </p>
-                    <p className="font-mono text-xs text-gray-600">{order.id.substring(0, 18)}...</p>
+                    <p className="font-mono text-xs text-gray-600">{order.id}</p>
                     <p className="text-xs text-gray-500 mt-2 font-semibold">
                       {new Date(order.createdAt).toLocaleString()}
                     </p>
                   </div>
                   
-                  <div className="text-right">
-                    <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${
-                      order.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 
-                      order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
+                  <div className="text-right flex flex-col items-end">
+                    {/* Enhanced Status Display */}
+                    <span className={`px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm border ${
+                      order.status === 'COMPLETED' ? 'bg-green-100 text-green-700 border-green-200' : 
+                      order.status === 'PENDING' ? 'bg-orange-100 text-orange-700 border-orange-200 animate-pulse' : 'bg-red-100 text-red-700 border-red-200'
                     }`}>
-                      {order.status}
+                      {order.status === 'PENDING' ? '⏳ Pending Staff' : `✅ ${order.status}`}
                     </span>
+                    
+                    {order.status === 'PENDING' && (
+                       <p className="text-[10px] text-gray-500 mt-2 font-medium max-w-[150px] leading-tight">
+                         Will mark as completed when staff prepares your order.
+                       </p>
+                    )}
+
                     <p className="font-black text-3xl text-[#FF4461] mt-2">₹{order.totalPrice}</p>
                   </div>
                 </div>

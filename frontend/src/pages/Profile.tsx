@@ -51,7 +51,7 @@ export function Profile() {
             to="/orders"
             className="bg-[#575757b7] p-4 rounded-xl text-center font-medium hover:bg-[#454444b7] shadow-md transition-all active:scale-95 text-white"
           >
-            My Previous Orders
+            My Orders
           </Link>
         </div>
 

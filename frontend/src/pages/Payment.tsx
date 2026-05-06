@@ -14,103 +14,75 @@ const Payment = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handlePayment = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Generate a dynamic UPI QR code using a free API based on the cart total
+  const upiId = "campusbites@upi"; // Dummy UPI ID for the presentation
+  const upiString = `upi://pay?pa=${upiId}&pn=Campus%20Bites&am=${totalPrice}&cu=INR`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
 
+  const handlePayment = async () => {
     if (!token) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Simulate payment delay for the presentation
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
+      // Call your existing backend service
       await orderService.placeOrder(token);
 
       clearCart();
-      alert("payment successful! Order placed");
-      navigate("/profile");
+      navigate("/orders");
     } catch (error: any) {
       setError(error.message);
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center custom-bg-image px-4">
-      <div className="bg-white/30 backdrop-blur-lg p-8 rounded-2xl shadow-xl w-full max-w-lg">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
+      <div className="bg-white/30 backdrop-blur-lg p-8 rounded-2xl shadow-xl w-full max-w-lg flex flex-col items-center">
+        <h2 className="text-3xl font-bold mb-2 text-center text-gray-800">
           Payment Details
         </h2>
+        <p className="text-gray-800 font-medium mb-6 text-center">
+          Scan the QR code below to pay
+        </p>
 
-        <form className="space-y-4" onSubmit={handlePayment}>
-          <div>
-            <label className="block font-medium mb-1 text-gray-800">
-              Cardholder Name
-            </label>
-            <input
-              required
-              type="text"
-              placeholder="Enter your name"
-              className="w-full px-4 py-2 rounded-md bg-gray-700/80 text-white focus:outline-none"
-            />
-          </div>
+        {/* QR Code Section */}
+        <div className="flex justify-center mb-6 p-4 bg-white rounded-xl shadow-sm">
+          <img 
+            src={qrCodeUrl} 
+            alt="Payment QR Code" 
+            className="w-48 h-48"
+          />
+        </div>
 
-          <div>
-            <label className="block font-medium mb-1 text-gray-800">
-              Card Number
-            </label>
-            <input
-              required
-              type="text"
-              placeholder="1234 5678 9012 3456"
-              className="w-full px-4 py-2 rounded-md bg-gray-700/80 text-white focus:outline-none"
-            />
-          </div>
+        {/* Total Price Display */}
+        <div className="text-4xl font-black text-gray-900 mb-8">
+          ₹{totalPrice}
+        </div>
 
-          <div className="flex space-x-4">
-            <div className="w-1/2">
-              <label className="block font-medium mb-1 text-gray-800">
-                Expiry Date
-              </label>
-              <input
-                required
-                type="text"
-                placeholder="MM/YY"
-                className="w-full px-4 py-2 rounded-md bg-gray-700/80 text-white focus:outline-none"
-              />
-            </div>
-            <div className="w-1/2">
-              <label className="block font-medium mb-1 text-gray-800">
-                CVV
-              </label>
-              <input
-                required
-                type="password"
-                placeholder="•••"
-                className="w-full px-4 py-2 rounded-md bg-gray-700/80 text-white focus:outline-none"
-              />
-            </div>
-          </div>
+        {error && (
+          <p className="text-red-600 text-center font-bold bg-white/50 p-2 rounded w-full mb-4">
+            {error}
+          </p>
+        )}
 
-          {error && (
-            <p className="text-red-600 text-center font-bold bg-white/50 p-2 rounded">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full text-white py-2 rounded-lg shadow-md transition ${
-              loading
-                ? "bg-gray-500 cursor-not-allowed"
-                : "bg-[#ff4757] hover:bg-red-700 cursor-pointer"
-            }`}
-          >
-            {loading ? "Processing..." : `Pay ₹${totalPrice}`}
-          </button>
-        </form>
+        {/* Simulate Payment Button */}
+        <button
+          onClick={handlePayment}
+          disabled={loading}
+          className={`w-full text-white py-3 text-lg font-bold rounded-lg shadow-md transition ${
+            loading
+              ? "bg-gray-500 cursor-not-allowed animate-pulse"
+              : "bg-[#ff4757] hover:bg-red-700 cursor-pointer"
+          }`}
+        >
+          {loading ? "Processing Payment..." : `Simulate Payment`}
+        </button>
       </div>
     </div>
   );

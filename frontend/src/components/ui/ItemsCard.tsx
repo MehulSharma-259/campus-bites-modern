@@ -60,7 +60,7 @@ export function ItemCard({ item }: CardProps) {
       <div className="flex justify-center items-center font-semibold text-lg text-white bg-red-500 ml-auto rounded-lg shadow-md overflow-hidden translate-y-[26px]">
         
         <button
-          className="cursor-pointer p-2 w-5 text-xl hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cursor-pointer p-2 w-8 text-xl hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={increment}
         >
           +
@@ -71,7 +71,7 @@ export function ItemCard({ item }: CardProps) {
         </div>
         
         <button
-          className="cursor-pointer p-2 mr-1 w-5 text-xl hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cursor-pointer p-2 w-8 text-xl hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={decrement}
           disabled={quantity === 0}
         >
