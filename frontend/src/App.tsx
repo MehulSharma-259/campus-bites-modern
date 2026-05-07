@@ -7,6 +7,7 @@ import {Signup} from "./pages/Signup";
 import {Home} from "./pages/Home";
 import Cart from "./pages/Cart";
 import Payment from "./pages/Payment";
+import Contact from "./pages/Contact"
 import {Profile} from "./pages/Profile";
 import {ProtectedRoute} from "./components/ProtectedRoute";
 import {Orders} from "./pages/Orders";
@@ -14,6 +15,7 @@ import {Navbar} from "./components/Navbar";
 import AdminLayout from "./components/AdminLayout";
 import MenuManagement from "./pages/admin/MenuManagement";
 import AdminOrders from "./pages/admin/AdminOrders";
+import About from "./pages/About";
 
 // Wrapper for the student-facing side so the normal Navbar doesn't bleed into the Admin side
 const StudentLayout = () => {
@@ -42,6 +44,8 @@ function App() {
             <Route path="/payment" element={<Payment />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/orders" element={<Orders />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<About />} />
           </Route>
         </Route>
 
